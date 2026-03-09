@@ -63,8 +63,8 @@ export default function MyChild() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">My Children</h1>
-          <p className="text-sm text-gray-400">Manage your children's profiles</p>
+          <h1 className="text-2xl font-bold text-text-heading">My Children</h1>
+          <p className="text-sm text-text-muted">Manage your children's profiles</p>
         </div>
         <button onClick={() => { resetForm(); setShowForm(true); }} className="btn-primary text-sm py-2 px-4">
           + Add Child

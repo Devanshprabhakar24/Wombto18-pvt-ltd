@@ -8,28 +8,27 @@ function StatCard({ icon, label, value, trend, color }) {
     <div className="card flex items-center gap-4">
       <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl ${color}`}>{icon}</div>
       <div>
-        <p className="text-xs text-gray-400 uppercase tracking-wide">{label}</p>
-        <p className="text-xl font-bold text-gray-800">{value}</p>
-        {trend && <p className="text-xs text-accent-600 font-medium">{trend}</p>}
+        <p className="text-xs text-text-muted uppercase tracking-wide">{label}</p>
+        <p className="text-xl font-bold text-text-heading">{value}</p>
+        {trend && <p className="text-xs text-primary-bright font-medium">{trend}</p>}
       </div>
     </div>
   );
 }
 
-/* ---- Vaccine Row ---- */
 function VaccineRow({ name, date, status }) {
   const colors = {
-    completed: 'bg-accent-100 text-accent-700',
-    upcoming: 'bg-yellow-100 text-yellow-700',
-    overdue: 'bg-red-100 text-red-700',
+    completed: 'bg-accent-green text-primary-dark',
+    upcoming: 'bg-accent-yellow text-primary-dark',
+    overdue: 'bg-accent-red text-primary-dark',
   };
   return (
     <div className="flex items-center justify-between py-3 border-b last:border-none">
       <div className="flex items-center gap-3">
-        <input type="checkbox" checked={status === 'completed'} readOnly className="w-4 h-4 rounded text-accent-600" />
+        <input type="checkbox" checked={status === 'completed'} readOnly className="w-4 h-4 rounded text-primary-bright" />
         <div>
-          <p className="text-sm font-medium text-gray-800">{name}</p>
-          <p className="text-xs text-gray-400">{date}</p>
+          <p className="text-sm font-medium text-text-heading">{name}</p>
+          <p className="text-xs text-text-muted">{date}</p>
         </div>
       </div>
       <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full ${colors[status] || colors.upcoming}`}>{status}</span>
@@ -37,23 +36,21 @@ function VaccineRow({ name, date, status }) {
   );
 }
 
-/* ---- Milestone Item ---- */
 function MilestoneItem({ age, text, done }) {
   return (
     <div className="flex gap-3 items-start">
       <div className="flex flex-col items-center">
-        <div className={`w-3.5 h-3.5 rounded-full border-2 ${done ? 'bg-accent-500 border-accent-500' : 'bg-white border-gray-300'}`} />
-        <div className="w-0.5 flex-1 bg-gray-200" />
+        <div className={`w-3.5 h-3.5 rounded-full border-2 ${done ? 'bg-primary-bright border-primary-bright' : 'bg-white border-accent-grayBorder'}`} />
+        <div className="w-0.5 flex-1 bg-accent-grayBorder" />
       </div>
       <div className="pb-5">
-        <p className="text-sm font-semibold text-gray-700">{age}</p>
-        <p className="text-xs text-gray-400">{text}</p>
+        <p className="text-sm font-semibold text-text-body">{age}</p>
+        <p className="text-xs text-text-muted">{text}</p>
       </div>
     </div>
   );
 }
 
-/* ---- Bar Chart (simple CSS) ---- */
 function MiniBarChart({ data }) {
   const max = Math.max(...data.map(d => d.value), 1);
   return (
@@ -61,40 +58,33 @@ function MiniBarChart({ data }) {
       {data.map((d) => (
         <div key={d.label} className="flex-1 flex flex-col items-center gap-1">
           <div className="w-full rounded-t-md bg-primary-500 transition-all" style={{ height: `${(d.value / max) * 100}%` }} />
-          <span className="text-[9px] text-gray-400">{d.label}</span>
+          <span className="text-[9px] text-text-muted">{d.label}</span>
         </div>
       ))}
     </div>
   );
 }
 
-/* ---- Milestone map ---- */
 const milestoneMap = [
-  { ageWeeks: 0, age: 'Birth', text: 'BCG & Hep B – Birth Dose' },
-  { ageWeeks: 6, age: '6 Weeks', text: 'OPV, Pentavalent, Rotavirus' },
-  { ageWeeks: 10, age: '10 Weeks', text: 'OPV, Pentavalent, Rotavirus' },
-  { ageWeeks: 14, age: '14 Weeks', text: 'OPV, Pentavalent, IPV' },
-  { ageWeeks: 36, age: '9 Months', text: 'MMR Dose-1, Vitamin A' },
+  { ageWeeks: 0, age: 'Birth', text: 'BCG, OPV-0, Hep B Birth Dose' },
+  { ageWeeks: 6, age: '6 Weeks', text: 'DTwP/DTaP-1, IPV-1, Hib-1, Rotavirus-1, PCV-1, Hep B-2' },
+  { ageWeeks: 10, age: '10 Weeks', text: 'DTwP/DTaP-2, IPV-2, Hib-2, Rotavirus-2, PCV-2' },
+  { ageWeeks: 14, age: '14 Weeks', text: 'DTwP/DTaP-3, IPV-3, Hep B-3, Hib-3, Rotavirus-3, PCV-3' },
+  { ageWeeks: 36, age: '9 Months', text: 'MMR-1, JE-1 (endemic)' },
 ];
 
 export default function Dashboard() {
   const { user } = useAuth();
   const [children, setChildren] = useState([]);
   const [schedule, setSchedule] = useState([]);
-  const [impact, setImpact] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const load = async () => {
       try {
-        const [childRes, impactRes] = await Promise.all([
-          api.get('/children'),
-          api.get('/impact'),
-        ]);
+        const childRes = await api.get('/children');
         setChildren(childRes.data.children);
-        setImpact(impactRes.data.impact);
 
-        // Load vaccine schedule for first child
         if (childRes.data.children.length > 0) {
           const schedRes = await api.get(`/vaccines/${childRes.data.children[0]._id}/all`);
           setSchedule(schedRes.data.schedule);
@@ -105,24 +95,17 @@ export default function Dashboard() {
     load();
   }, []);
 
-  // Derive stats
   const upcomingCount = schedule.filter(v => v.status === 'upcoming').length;
   const completedCount = schedule.filter(v => v.status === 'completed').length;
   const overdueCount = schedule.filter(v => v.status === 'overdue').length;
-  const impactScore = impact?.impactScore || 0;
-  const level = impact?.sustainabilityLevel || 'Bronze';
-  const trees = impact?.treeCount || 0;
 
-  // Next 5 vaccines to show
   const nextVaccines = schedule.filter(v => v.status !== 'completed').slice(0, 5);
 
-  // Milestones with age-based done status
   const firstChild = children[0];
   const ageWeeks = firstChild
     ? Math.floor((new Date() - new Date(firstChild.dob)) / (1000 * 60 * 60 * 24 * 7))
     : 0;
 
-  // Chart data: group vaccines by description period
   const chartLabels = ['Birth', '6w', '10w', '14w', '9m', '12m+'];
   const chartThresholds = [0, 6, 10, 14, 36, 52];
   const chartData = chartLabels.map((label, i) => {
@@ -133,33 +116,30 @@ export default function Dashboard() {
     return { label, value: done || (group.length > 0 ? 1 : 0) };
   });
 
-  if (loading) return <div className="text-center text-gray-400 py-12">Loading dashboard...</div>;
+  if (loading) return <div className="text-center text-text-muted py-12">Loading dashboard...</div>;
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-sm text-gray-400">Welcome back, {user?.name || 'Parent'}! Here's your child's health overview.</p>
+          <h1 className="text-2xl font-bold text-text-heading">Dashboard</h1>
+          <p className="text-sm text-text-muted">Welcome back, {user?.name || 'Parent'}! Here's your child's health overview.</p>
         </div>
-        <span className="text-xs text-gray-400 bg-white px-3 py-1.5 rounded-full border border-gray-200">📅 {new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+        <span className="text-xs text-text-muted bg-accent-green/10 px-3 py-1.5 rounded-full border border-accent-green/40">📅 {new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
       </div>
 
-      {/* Stat Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard icon="💉" label="Upcoming Vaccines" value={upcomingCount} color="bg-blue-50" />
-        <StatCard icon="📊" label="Completed" value={`${completedCount} / ${schedule.length}`} trend={overdueCount > 0 ? `${overdueCount} overdue` : 'On track!'} color="bg-accent-50" />
-        <StatCard icon="🌱" label="Green Impact" value={impactScore} color="bg-green-50" />
-        <StatCard icon="👶" label="Children" value={children.length} color="bg-purple-50" />
+        <StatCard icon="💉" label="Upcoming Vaccines" value={upcomingCount} color="bg-accent-green/20" />
+        <StatCard icon="📊" label="Completed" value={`${completedCount} / ${schedule.length}`} trend={overdueCount > 0 ? `${overdueCount} overdue` : 'On track!'} color="bg-accent-green" />
+        <StatCard icon="👶" label="Children" value={children.length} color="bg-accent-green/40" />
       </div>
 
-      {/* Main Panels */}
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Upcoming Vaccines */}
         <div className="card">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-bold text-gray-800">Upcoming Vaccines</h2>
-            <a href="/dashboard/vaccines" className="text-xs text-primary-600 font-semibold hover:underline">View All</a>
+            <h2 className="text-lg font-bold text-text-heading">Upcoming Vaccines</h2>
+            <a href="/dashboard/vaccines" className="text-xs text-primary-bright font-semibold hover:underline">View All</a>
           </div>
           <MiniBarChart data={chartData} />
           <div className="mt-4">
@@ -171,16 +151,15 @@ export default function Dashboard() {
                 status={v.status}
               />
             )) : (
-              <p className="text-sm text-gray-400 text-center py-4">All vaccines are up to date!</p>
+              <p className="text-sm text-text-muted text-center py-4">All vaccines are up to date!</p>
             )}
           </div>
         </div>
 
-        {/* Growth Milestones */}
         <div className="card">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-bold text-gray-800">Growth Milestones</h2>
-            <a href="/dashboard/milestones" className="text-xs text-primary-600 font-semibold hover:underline">View All</a>
+            <h2 className="text-lg font-bold text-text-heading">Growth Milestones</h2>
+            <a href="/dashboard/milestones" className="text-xs text-primary-bright font-semibold hover:underline">View All</a>
           </div>
           <MiniBarChart data={[
             { label: 'Vaccines', value: completedCount },
@@ -196,59 +175,67 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Bottom row */}
       <div className="grid lg:grid-cols-2 gap-6">
-        {/* Green Cohort Impact */}
-        <div className="card bg-gradient-to-br from-accent-50 to-green-50">
-          <h2 className="text-lg font-bold text-gray-800 mb-4">Green Cohort Impact</h2>
-          <div className="grid grid-cols-3 gap-4 text-center">
-            <div>
-              <p className="text-3xl font-bold text-accent-600">{impactScore}</p>
-              <p className="text-xs text-gray-400 mt-1">Impact Score</p>
+        <div className="card">
+          <h2 className="text-lg font-bold text-gray-900 mb-4">School Integration Status</h2>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center text-lg">🏫</div>
+                <div>
+                  <p className="text-sm font-semibold text-gray-800">Health Record Sharing</p>
+                  <p className="text-xs text-gray-500">Share verified vaccination records with school</p>
+                </div>
+              </div>
+              <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-yellow-100 text-yellow-700 uppercase">Pending</span>
             </div>
-            <div>
-              <p className="text-3xl font-bold text-accent-600">{trees}</p>
-              <p className="text-xs text-gray-400 mt-1">Trees Planted</p>
+            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center text-lg">✅</div>
+                <div>
+                  <p className="text-sm font-semibold text-gray-800">Vaccination Compliance</p>
+                  <p className="text-xs text-gray-500">{completedCount}/{schedule.length} vaccines documented</p>
+                </div>
+              </div>
+              <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full uppercase ${completedCount > 0 ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>{completedCount > 0 ? 'Active' : 'Not started'}</span>
             </div>
-            <div>
-              <p className="text-3xl font-bold text-accent-600">{level}</p>
-              <p className="text-xs text-gray-400 mt-1">Sustainability</p>
-            </div>
-          </div>
-          <div className="mt-4 bg-white/60 rounded-lg p-3">
-            <div className="flex justify-between text-xs text-gray-500 mb-1">
-              <span>Progress to {level === 'Gold' ? 'Max' : level === 'Silver' ? 'Gold' : 'Silver'}</span>
-              <span>{impactScore}%</span>
-            </div>
-            <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-              <div className="h-full bg-accent-500 rounded-full" style={{ width: `${impactScore}%` }} />
+            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center text-lg">📝</div>
+                <div>
+                  <p className="text-sm font-semibold text-gray-800">Digital Health Card</p>
+                  <p className="text-xs text-gray-500">Paperless health records for school admission</p>
+                </div>
+              </div>
+              <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 uppercase">Coming Soon</span>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Quick Links card */}
+      <div className="grid lg:grid-cols-1 gap-6">
         <div className="card">
-          <h2 className="text-lg font-bold text-gray-800 mb-4">Quick Actions</h2>
-          <div className="space-y-3">
-            <a href="/dashboard/child" className="flex items-center gap-3 p-3 bg-primary-50 rounded-xl hover:bg-primary-100 transition">
+          <h2 className="text-lg font-bold text-gray-900 mb-4">Quick Actions</h2>
+          <div className="grid sm:grid-cols-3 gap-3">
+            <a href="/dashboard/child" className="flex items-center gap-3 p-3 bg-green-50 rounded-xl hover:bg-green-100 transition">
               <span className="text-2xl">👶</span>
               <div>
-                <p className="font-semibold text-gray-800">Manage Children</p>
+                <p className="font-semibold text-green-700">Manage Children</p>
                 <p className="text-xs text-gray-500">{children.length} child{children.length !== 1 ? 'ren' : ''} registered</p>
               </div>
             </a>
-            <a href="/dashboard/vaccines" className="flex items-center gap-3 p-3 bg-yellow-50 rounded-xl hover:bg-yellow-100 transition">
+            <a href="/dashboard/vaccines" className="flex items-center gap-3 p-3 bg-green-50 rounded-xl hover:bg-green-100 transition">
               <span className="text-2xl">💉</span>
               <div>
-                <p className="font-semibold text-gray-800">Vaccine Schedule</p>
+                <p className="font-semibold text-green-700">Vaccine Schedule</p>
                 <p className="text-xs text-gray-500">{upcomingCount} upcoming, {overdueCount} overdue</p>
               </div>
             </a>
-            <a href="/dashboard/impact" className="flex items-center gap-3 p-3 bg-accent-50 rounded-xl hover:bg-accent-100 transition">
-              <span className="text-2xl">🌱</span>
+            <a href="/dashboard/go-green" className="flex items-center gap-3 p-3 bg-green-50 rounded-xl hover:bg-green-100 transition">
+              <span className="text-2xl">🌳</span>
               <div>
-                <p className="font-semibold text-gray-800">Green Impact</p>
-                <p className="text-xs text-gray-500">Score: {impactScore} — Level: {level}</p>
+                <p className="font-semibold text-green-700">Go Green</p>
+                <p className="text-xs text-gray-500">Plant trees & track your green impact</p>
               </div>
             </a>
           </div>

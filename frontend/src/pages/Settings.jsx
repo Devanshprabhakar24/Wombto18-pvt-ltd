@@ -21,11 +21,18 @@ export default function Settings() {
     e.preventDefault();
     setMessage('');
     setSaving(true);
-    // NOTE: profile update endpoint could be added later; for now show saved state
-    setTimeout(() => {
+    try {
+      await api.put('/parents/me', {
+        name: profile.name,
+        phone: profile.phone,
+        state: profile.state,
+      });
+      setMessage('Profile settings saved successfully.');
+    } catch (err) {
+      setMessage(err.response?.data?.message || 'Failed to save profile.');
+    } finally {
       setSaving(false);
-      setMessage('Profile settings saved (display only — backend update endpoint not yet implemented).');
-    }, 500);
+    }
   };
 
   if (loading) return <div className="text-center text-gray-400 py-12">Loading...</div>;
@@ -33,8 +40,8 @@ export default function Settings() {
   return (
     <div className="space-y-6 max-w-2xl">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
-        <p className="text-sm text-gray-400">Manage your account and preferences</p>
+        <h1 className="text-2xl font-bold text-text-heading">Settings</h1>
+        <p className="text-sm text-text-muted">Manage your account and preferences</p>
       </div>
 
       {/* Profile */}

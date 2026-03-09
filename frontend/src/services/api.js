@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: '/api',
+    baseURL: import.meta.env.VITE_API_URL || '/api',
     headers: { 'Content-Type': 'application/json' },
 });
 
@@ -20,8 +20,9 @@ api.interceptors.response.use(
     (error) => {
         if (error.response?.status === 401) {
             localStorage.removeItem('wombto18_token');
-            // Only redirect if not already on login/register pages
-            if (!['/login', '/register', '/'].some(p => window.location.pathname.startsWith(p))) {
+            // Only redirect if not already on login/register/home pages
+            const path = window.location.pathname;
+            if (path !== '/' && !path.startsWith('/login') && !path.startsWith('/register')) {
                 window.location.href = '/login';
             }
         }

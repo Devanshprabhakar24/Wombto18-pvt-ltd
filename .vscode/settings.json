@@ -1,0 +1,13 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "npm run dev": true,
+        "/^cd \"c:\\\\window E\\\\Wombto18\\\\project\\\\backend\"; node -e \"const http = require\\('http'\\); const req = http\\.get\\('http://localhost:5000/api/health', \\(res\\) => \\{ let d=''; res\\.on\\('data', c => d\\+=c\\); res\\.on\\('end', \\(\\) => \\{ console\\.log\\('Status:', res\\.statusCode, d\\); process\\.exit\\(\\); \\}\\); \\}\\); req\\.on\\('error', \\(e\\) => \\{ console\\.log\\('Server not running:', e\\.message\\); process\\.exit\\(1\\); \\}\\);\"$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^cd \"c:\\\\window E\\\\Wombto18\\\\GitHub\\\\team-projects-wombto18\\\\Devansh Prabhakar\\\\Wombto18-app\\\\backend\" ; npm install helmet$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
+}

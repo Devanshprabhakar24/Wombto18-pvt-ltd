@@ -3,9 +3,9 @@ import api from '../services/api';
 
 function VaccineRow({ vaccine, onMark }) {
   const colors = {
-    completed: 'bg-accent-100 text-accent-700',
-    upcoming: 'bg-yellow-100 text-yellow-700',
-    overdue: 'bg-red-100 text-red-700',
+    completed: 'bg-accent-green text-primary-dark',
+    upcoming: 'bg-accent-yellow text-primary-dark',
+    overdue: 'bg-accent-red text-primary-dark',
   };
   return (
     <div className="flex items-center justify-between py-3 border-b last:border-none">
@@ -64,7 +64,6 @@ export default function VaccineSchedule() {
   const handleMark = async (vaccineName) => {
     try {
       await api.patch(`/vaccines/${selectedChild}/mark`, { vaccineName });
-      // Refresh schedule
       const res = await api.get(`/vaccines/${selectedChild}/all`);
       setSchedule(res.data.schedule);
     } catch { /* empty */ }
@@ -78,9 +77,10 @@ export default function VaccineSchedule() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Vaccine Schedule</h1>
-        <p className="text-sm text-gray-400">Indian National Immunization Schedule — 30 vaccines from birth to 12 years</p>
+        <h1 className="text-2xl font-bold text-text-heading">Vaccine Schedule</h1>
+        <p className="text-sm text-gray-400">IAP 2023 Immunization Schedule — {schedule.length} vaccines from birth to 12 years (as per Indian standards)</p>
       </div>
+  <p className="text-sm text-text-muted">Track and mark your child's vaccine doses</p>
 
       {/* Child selector */}
       {children.length > 1 && (
@@ -92,7 +92,6 @@ export default function VaccineSchedule() {
         </div>
       )}
 
-      {/* Stats */}
       <div className="grid grid-cols-3 gap-4">
         <div className="card flex items-center gap-3 cursor-pointer" onClick={() => setFilter('completed')}>
           <div className="w-10 h-10 bg-accent-50 rounded-lg flex items-center justify-center text-lg">✅</div>
@@ -117,7 +116,6 @@ export default function VaccineSchedule() {
         </div>
       </div>
 
-      {/* Filter tabs */}
       <div className="flex gap-2">
         {['all', 'upcoming', 'overdue', 'completed'].map(f => (
           <button

@@ -13,6 +13,17 @@ const VaccineSchedule = lazy(() => import('./pages/VaccineSchedule'));
 const Milestones = lazy(() => import('./pages/Milestones'));
 const Impact = lazy(() => import('./pages/Impact'));
 const Settings = lazy(() => import('./pages/Settings'));
+const MaternalDashboard = lazy(() => import('./pages/MaternalDashboard'));
+const PlanSelection = lazy(() => import('./pages/PlanSelection'));
+const MigratePage = lazy(() => import('./pages/MigratePage'));
+const GoGreenPage = lazy(() => import('./pages/GoGreenPage'));
+const PartnerDashboard = lazy(() => import('./pages/PartnerDashboard'));
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+const AdminParents = lazy(() => import('./pages/AdminParents'));
+const AdminReminders = lazy(() => import('./pages/AdminReminders'));
+const AdminLogs = lazy(() => import('./pages/AdminLogs'));
+const AdminChildren = lazy(() => import('./pages/AdminChildren'));
+const AdminLayout = lazy(() => import('./layouts/AdminLayout'));
 
 const Loader = () => (
   <div className="flex-1 flex items-center justify-center text-gray-400">
@@ -27,6 +38,15 @@ function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
   if (loading) return <Loader />;
   if (!user) return <Navigate to="/login" replace />;
+  if (user.role === 'admin') return <Navigate to="/admin" replace />;
+  return children;
+}
+
+function AdminRoute({ children }) {
+  const { user, loading } = useAuth();
+  if (loading) return <Loader />;
+  if (!user) return <Navigate to="/login" replace />;
+  if (user.role !== 'admin') return <Navigate to="/dashboard" replace />;
   return children;
 }
 
@@ -39,6 +59,7 @@ function AppRoutes() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<RegisterParent />} />
+
           <Route
             path="/dashboard"
             element={
@@ -53,6 +74,17 @@ function AppRoutes() {
             <Route path="milestones" element={<Milestones />} />
             <Route path="impact" element={<Impact />} />
             <Route path="settings" element={<Settings />} />
+            <Route path="maternal" element={<MaternalDashboard />} />
+            <Route path="plans" element={<PlanSelection />} />
+            <Route path="migrate" element={<MigratePage />} />
+            <Route path="go-green" element={<GoGreenPage />} />
+          </Route>
+          <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="parents" element={<AdminParents />} />
+            <Route path="children" element={<AdminChildren />} />
+            <Route path="reminders" element={<AdminReminders />} />
+            <Route path="logs" element={<AdminLogs />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
@@ -63,7 +95,7 @@ function AppRoutes() {
 
 function App() {
   return (
-    <Router>
+    <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <AuthProvider>
         <AppRoutes />
       </AuthProvider>

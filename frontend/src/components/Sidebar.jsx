@@ -2,9 +2,12 @@ import { NavLink } from 'react-router-dom';
 
 const links = [
   { to: '/dashboard', icon: '📊', label: 'Dashboard' },
+  { to: '/dashboard/maternal', icon: '🤰', label: 'Maternal' },
   { to: '/dashboard/child', icon: '👶', label: 'My Child' },
   { to: '/dashboard/vaccines', icon: '💉', label: 'Vaccine Schedule' },
   { to: '/dashboard/milestones', icon: '📈', label: 'Milestones' },
+  { to: '/dashboard/plans', icon: '💎', label: 'Plans' },
+  { to: '/dashboard/go-green', icon: '🌳', label: 'Go Green' },
   { to: '/dashboard/impact', icon: '🌱', label: 'Impact' },
   { to: '/dashboard/settings', icon: '⚙️', label: 'Settings' },
 ];
