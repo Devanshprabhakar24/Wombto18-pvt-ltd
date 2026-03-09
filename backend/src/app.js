@@ -35,24 +35,20 @@ if (NODE_ENV === 'production') {
     });
 }
 
-// Restrict CORS to known origins
-const allowedOrigins = process.env.CORS_ORIGINS
-    ? process.env.CORS_ORIGINS.split(',').map(o => o.trim())
-    : (NODE_ENV === 'production' ? [] : ['http://localhost:5173', 'http://localhost:3000']);
-
-// Vercel URL patterns for this project (production + preview deployments)
-const vercelPatterns = [
-    /^https:\/\/wombto18-pvt-ltd\.vercel\.app$/,
-    /^https:\/\/wombto18-pvt[a-z0-9-]*-devansh-prabhakars-projects\.vercel\.app$/,
+// CORS — allow Vercel frontend + any extra origins from env
+const allowedOrigins = [
+    'https://wombto18-pvt-ltd.vercel.app',
+    'http://localhost:5173',
+    'http://localhost:3000',
+    ...(process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',').map(o => o.trim()) : []),
 ];
 
 app.use(cors({
     origin: (origin, cb) => {
-        // Allow requests with no origin (mobile apps, curl, server-to-server)
         if (!origin) return cb(null, true);
         if (allowedOrigins.includes(origin)) return cb(null, true);
-        // Allow Vercel production and preview deployments
-        if (vercelPatterns.some(p => p.test(origin))) return cb(null, true);
+        // Allow Vercel preview deployments
+        if (/^https:\/\/wombto18-pvt[a-z0-9-]*-devansh-prabhakars-projects\.vercel\.app$/.test(origin)) return cb(null, true);
         cb(null, false);
     },
     credentials: true,
