@@ -35,24 +35,7 @@ if (NODE_ENV === 'production') {
     });
 }
 
-// CORS — allow Vercel frontend + any extra origins from env
-const allowedOrigins = [
-    'https://wombto18-pvt-ltd.vercel.app',
-    'http://localhost:5173',
-    'http://localhost:3000',
-    ...(process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',').map(o => o.trim()) : []),
-];
-
-app.use(cors({
-    origin: (origin, cb) => {
-        if (!origin) return cb(null, true);
-        if (allowedOrigins.includes(origin)) return cb(null, true);
-        // Allow Vercel preview deployments
-        if (/^https:\/\/wombto18-pvt[a-z0-9-]*-devansh-prabhakars-projects\.vercel\.app$/.test(origin)) return cb(null, true);
-        cb(null, false);
-    },
-    credentials: true,
-}));
+app.use(cors());
 
 app.use(express.json({ limit: '1mb' }));
 app.use(morgan(NODE_ENV === 'production' ? 'combined' : 'dev'));
