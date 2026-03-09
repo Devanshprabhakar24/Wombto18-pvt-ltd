@@ -5,8 +5,8 @@ const { protect } = require('../middleware/authMiddleware');
 const { activityLogger } = require('../middleware/activityLogger');
 const { rateLimiter } = require('../middleware/rateLimiter');
 
-// Strict rate limit for auth endpoints (10 requests per 15 min per IP)
-const authLimiter = rateLimiter(15 * 60 * 1000, 10);
+// Rate limit for auth endpoints (100 requests per 15 min per IP)
+const authLimiter = rateLimiter(15 * 60 * 1000, 100);
 
 // POST /api/auth/register
 router.post('/register', authLimiter, register);

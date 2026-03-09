@@ -23,6 +23,9 @@ const app = express();
 // Disable X-Powered-By header
 app.disable('x-powered-by');
 
+// Trust proxy (Render, etc.) for correct req.ip
+app.set('trust proxy', 1);
+
 // CORS — must be before any other middleware that might respond
 app.use(cors());
 

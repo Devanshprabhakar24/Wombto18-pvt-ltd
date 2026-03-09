@@ -7,7 +7,7 @@ const rateLimit = {};
  */
 const rateLimiter = (windowMs = 15 * 60 * 1000, max = 1000) => {
     return (req, res, next) => {
-        const key = req.ip;
+        const key = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.ip;
         const now = Date.now();
 
         if (!rateLimit[key]) {
