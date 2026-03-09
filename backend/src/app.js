@@ -41,7 +41,7 @@ const allowedOrigins = process.env.CORS_ORIGINS
     : (NODE_ENV === 'production' ? [] : ['http://localhost:5173', 'http://localhost:3000']);
 
 // Vercel preview URL pattern for this project
-const vercelPreviewPattern = /^https:\/\/wombto18-pvt(-[a-z0-9]+)*-devansh-prabhakars-projects\.vercel\.app$/;
+const vercelPreviewPattern = /^https:\/\/wombto18-pvt[a-z0-9-]*-devansh-prabhakars-projects\.vercel\.app$/;
 
 app.use(cors({
     origin: (origin, cb) => {
