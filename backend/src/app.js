@@ -23,6 +23,9 @@ const app = express();
 // Disable X-Powered-By header
 app.disable('x-powered-by');
 
+// CORS — must be before any other middleware that might respond
+app.use(cors());
+
 // HTTPS redirect in production (skip for localhost / 127.0.0.1)
 if (NODE_ENV === 'production') {
     app.use((req, res, next) => {
@@ -34,8 +37,6 @@ if (NODE_ENV === 'production') {
         next();
     });
 }
-
-app.use(cors());
 
 app.use(express.json({ limit: '1mb' }));
 app.use(morgan(NODE_ENV === 'production' ? 'combined' : 'dev'));
